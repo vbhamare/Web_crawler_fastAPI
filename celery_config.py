@@ -2,7 +2,7 @@ from celery import Celery
 import os
 from dotenv import load_dotenv
 from celery.schedules import crontab
-from datetime import timedelta
+
 
 load_dotenv()
 
