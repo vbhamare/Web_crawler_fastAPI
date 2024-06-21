@@ -1,15 +1,11 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from schemas import  TaskModel, legitimateSellerModel
+from schemas import  TaskModel, LegitimateSellerModel
 from typing import List
 from datetime import datetime
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from models import Base,get_db,Task,LegitimateSeller
+from database import get_db,Base,engine
+from models import Base,Task,LegitimateSeller
 
-
-engine = create_engine('postgresql://postgres:12345@localhost:5432/webcrawlerdb')
-Session = sessionmaker(aucommit=False ,autoflush=False,bind=engine)
 
 Base.metadata.create_all(bind=engine)
 
@@ -17,17 +13,17 @@ app = FastAPI()
 
 
 @app.get("/tasks", response_model=List[TaskModel])
-async def get_tasks(db: Session = Depends(get_db)): # type: ignore
+async def get_tasks(db: Session = Depends(get_db)):
     return db.query(Task).all()
 
 
 @app.get("/tasksdate", response_model=List[TaskModel])
-async def get_tasks_by_date(date: datetime, db: Session = Depends(get_db)): # type: ignore
+async def get_tasks_by_date(date: datetime, db: Session = Depends(get_db)):
     return db.query(Task).filter(Task.date == date).all()
 
 
-@app.get("/legitimate_sellers", response_model=List[legitimateSellerModel])
-async def get_legitimate_sellers(domain: str, db: Session = Depends(get_db)): # type: ignore
+@app.get("/legitimate_sellers", response_model=List[LegitimateSellerModel])
+async def get_legitimate_sellers(domain: str, db: Session = Depends(get_db)): 
     return db.query(LegitimateSeller).filter(LegitimateSeller.ssp_domain_name == domain).all()
 
 
